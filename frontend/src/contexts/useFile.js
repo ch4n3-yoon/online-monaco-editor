@@ -30,6 +30,22 @@ export const FileProvider = ({ children }) => {
     })
   }
 
+  const saveFile = (path, content) => {
+    return new Promise((resolve, reject) => {
+      http
+        .post("/save", { path, content })
+        .then(responseHandler)
+        .then((data) => {
+          setFile(data.data)
+          resolve(data.data)
+        })
+        .catch((data) => {
+          console.error(data)
+          resolve(data.message)
+        })
+    })
+  }
+
   const fetchFiles = () => {
     return new Promise((resolve, reject) => {
       http
@@ -55,6 +71,7 @@ export const FileProvider = ({ children }) => {
 
     file,
     fetchFile,
+    saveFile,
 
     files,
     fetchFiles,
