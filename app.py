@@ -1,5 +1,6 @@
 import os
 import json
+from re import S
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -11,6 +12,22 @@ app = Flask(
     static_folder="static"
 )
 CORS(app, resources={r'*': {'origins': 'http://172.16.11.11:3000'}})
+
+
+def success(data):
+    return jsonify({
+        "status": True,
+        "data": data,
+        "message": ""
+    })
+
+
+def fail(message):
+    return jsonify({
+        "status": False,
+        "data": {},
+        "message": message
+    })
 
 
 @app.route("/")
@@ -79,10 +96,34 @@ def cat():
     
     return jsonify({
         "status": True, 
-        "data": content,
+        "data": {"path": path, "content": content},
         "message": "",
     })
 
+
+@app.route("/api/save", methods=["POST"])
+def save():
+    """ 
+    A function that saves file content for a given file path
+    """
+    params = request.get_json()
+    path = params.get("path", "")
+    content = params.get("content", "")
+    
+    if not path:
+        return fail("path was not provided.")
+    
+    if path.find("../") > -1:
+        return fail("no hack ~_~")
+    
+    if not os.path.isfile(path):
+        return fail("not valid file")
+
+    with open(path, "w") as f:
+        f.write(content)
+    
+    return success({})
+    
 
 if __name__ == "__main__":
     app.run(
