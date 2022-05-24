@@ -1,6 +1,4 @@
 import os
-import json
-from re import S
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -9,7 +7,6 @@ from flask_cors import CORS
 
 app = Flask(
     __name__,
-    static_folder="static"
 )
 CORS(app, resources={r'*': {'origins': 'http://172.16.11.11:3000'}})
 
@@ -30,13 +27,6 @@ def fail(message):
     })
 
 
-@app.route("/")
-def root():
-    with open("./editor.html") as f:
-        content = f.read()
-    return content
-
-
 @app.route("/api/ls")
 def ls():
     """
@@ -50,7 +40,7 @@ def ls():
     if path[-1] == "/":
         path = path[0:-1]
     
-    path = os.path.join("./code", path)
+    path = os.path.join("/code", path)
 
     def filetree_to_dict(path):
         file = {
@@ -87,6 +77,8 @@ def cat():
     if path.find("../") > -1:
         return ""
     
+    path = os.path.join("/code", path)
+    
     try:
         with open(path) as f:
             content = f.read()
@@ -115,6 +107,8 @@ def save():
     
     if path.find("../") > -1:
         return fail("no hack ~_~")
+    
+    path = os.path.join("/code", path)
     
     if not os.path.isfile(path):
         return fail("not valid file")

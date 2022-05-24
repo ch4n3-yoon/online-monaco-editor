@@ -1,0 +1,10 @@
+version: "3"
+services:
+  webapp:
+    container_name: online-monaco-editor
+    build:
+      context: ./backend/
+    ports:
+      - "7777:8000"
+    volumes:
+      - "./code/:/code/"
