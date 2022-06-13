@@ -7,21 +7,22 @@ import { useFile } from "../../../contexts/useFile"
 // styles
 import styles from "./styles.module.scss"
 
-const TreeNode = ({ data }) => {
+const TreeNode = ({ data, path }) => {
   const file = useFile()
 
   if (!data) return <></>
-  const { type, path, name } = data
+  const { type, name } = data
+  const basePath = path.concat(`${name}`)
 
   if (type === "directory") {
     return (
       <List.Item>
         <List.Icon name="folder" />
         <List.Content>
-          <List.Description>{data.path}</List.Description>
+          <List.Description>{data.name}</List.Description>
           <List.List>
             {data.children.map((node) => (
-              <TreeNode data={node} />
+              <TreeNode data={node} path={`${basePath}/`} />
             ))}
           </List.List>
         </List.Content>
@@ -30,8 +31,8 @@ const TreeNode = ({ data }) => {
   } else if (type === "file") {
     return (
       <List.Item
-        className={styles.clickable}
-        onClick={() => file.fetchFile(path)}>
+        className={styles.fileItem}
+        onClick={() => file.fetchFile(basePath)}>
         <List.Icon name="file" />
         <List.Content>
           <List.Description>{name}</List.Description>
@@ -51,10 +52,32 @@ export const SideBar = (props) => {
     file.fetchFiles("./")
   }, [file])
 
+  if (file.files?.name === null) {
+    return <div>Now Loading...</div>
+  }
+
+  console.log(file.files)
+
   return (
-    <List {...props}>
-      <TreeNode data={file.files} />
-    </List>
+    <div className={styles.fileList}>
+      {JSON.stringify(file.files)}
+      <List {...props}>
+        <List.Item>
+          <List.Icon name="folder" />
+          <List.Content>
+            <List.Description>{file.files?.name}</List.Description>
+            <List.List>
+              {file.files?.children.map((node) => (
+                <TreeNode data={node} path="" />
+              ))}
+            </List.List>
+          </List.Content>
+        </List.Item>
+        {/* {file.files?.children.map((file) => (
+          <TreeNode data={file.files} path="" />
+        ))} */}
+      </List>
+    </div>
   )
 }
 

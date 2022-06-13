@@ -5,6 +5,9 @@ from flask import jsonify
 
 from flask_cors import CORS
 
+
+BASEDIR = os.environ.get("BASEDIR", "../code")
+
 app = Flask(
     __name__,
 )
@@ -12,19 +15,23 @@ CORS(app, resources={r'*': {'origins': 'http://172.16.11.11:3000'}})
 
 
 def success(data):
-    return jsonify({
+    response = jsonify({
         "status": True,
         "data": data,
         "message": ""
     })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 def fail(message):
-    return jsonify({
+    response = jsonify({
         "status": False,
         "data": {},
         "message": message
     })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route("/api/ls")
@@ -32,15 +39,10 @@ def ls():
     """
     A function that returns a file tree in JSON format for a given path.
     """
+    global BASEDIR
     
-    path = request.args.get("path", "")
-    if path.find("..") > -1:
-        return jsonify({})
-    
-    if path[-1] == "/":
-        path = path[0:-1]
-    
-    path = os.path.join("/code", path)
+    path = BASEDIR
+    root_path = BASEDIR
 
     def filetree_to_dict(path):
         file = {
@@ -56,7 +58,7 @@ def ls():
             file['type'] = "file"
         return file
 
-    filetree = filetree_to_dict(path)
+    filetree = filetree_to_dict(root_path)
     return jsonify({
         "status": True,
         "data": filetree,
@@ -69,7 +71,12 @@ def cat():
     """
     A function that returns file content for a given file path
     """
-    path = request.args.get("path")
+    print("has called")
+    global BASEDIR
+    path = request.args.get("path", "")
+    path = os.path.join(BASEDIR, path)
+    
+    print("[ DEBUG ] path :", path)
     
     if not os.path.isfile(path):
         return ""
@@ -77,7 +84,7 @@ def cat():
     if path.find("../") > -1:
         return ""
     
-    path = os.path.join("/code", path)
+   
     
     try:
         with open(path) as f:
@@ -108,7 +115,7 @@ def save():
     if path.find("../") > -1:
         return fail("no hack ~_~")
     
-    path = os.path.join("/code", path)
+    path = os.path.join(BASEDIR, path)
     
     if not os.path.isfile(path):
         return fail("not valid file")
