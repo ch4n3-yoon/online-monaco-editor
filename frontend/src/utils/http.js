@@ -1,7 +1,7 @@
 import axios from "axios"
 
 export const http = axios.create({
-  baseURL: "http://172.16.11.11:8000/api/",
+  baseURL: "/api/",
   // headers: {},
   timeout: 30000,
 //   withCredentials: true,
