@@ -11,7 +11,7 @@ BASEDIR = os.environ.get("BASEDIR", "../code")
 app = Flask(
     __name__,
 )
-CORS(app, resources={r'*': {'origins': 'http://172.16.11.11:3000'}})
+CORS(app, resources={r'*': {'origins': 'http://localhost:3001'}})
 
 
 def success(data):
@@ -43,11 +43,14 @@ def ls():
     
     path = BASEDIR
     root_path = BASEDIR
+    
+    if not root_path.endswith("/"):
+        root_path += "/"
 
     def filetree_to_dict(path):
         file = {
             "name": os.path.basename(path),
-            "path": path,
+            "path": path.replace(root_path, ""),
         }
         if os.path.isdir(path):
             file["type"] = "directory"
@@ -71,23 +74,23 @@ def cat():
     """
     A function that returns file content for a given file path
     """
-    print("has called")
     global BASEDIR
+    
+    root_path = BASEDIR
+    if not root_path.endswith("/"):
+        root_path += "/"
+    
     path = request.args.get("path", "")
     path = os.path.join(BASEDIR, path)
-    
-    print("[ DEBUG ] path :", path)
     
     if not os.path.isfile(path):
         return ""
     
-    if path.find("../") > -1:
+    if path.find("../") > 0:
         return ""
-    
-   
-    
+
     try:
-        with open(path) as f:
+        with open(path, "r") as f:
             content = f.read()
     except Exception as e:
         print("[ ERROR ]", e)
@@ -95,7 +98,7 @@ def cat():
     
     return jsonify({
         "status": True, 
-        "data": {"path": path, "content": content},
+        "data": {"path": path.replace(root_path, ""), "content": content},
         "message": "",
     })
 
@@ -129,6 +132,6 @@ def save():
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0", 
-        port=8000, 
+        port=5000, 
         debug=True,
     )
