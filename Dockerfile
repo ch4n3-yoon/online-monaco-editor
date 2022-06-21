@@ -24,6 +24,9 @@ COPY ./backend/app.py ./
 RUN pip3 install uwsgi
 COPY ./backend/uwsgi.ini ./
 
+COPY ./default.conf /etc/nginx/sites-available/default
+COPY ./frontend/build/ /var/www/html
+
 COPY start.sh /app/
 RUN chmod +x start.sh
 

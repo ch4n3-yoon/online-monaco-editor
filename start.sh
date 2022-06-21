@@ -3,6 +3,7 @@
 # nginx -g daemon off
 
 service nginx start
-uwsgi --ini /app/uwsgi.ini & 
+# uwsgi --ini /app/uwsgi.ini & 
+python3 /app/app.py
 
 tail -f /dev/null
