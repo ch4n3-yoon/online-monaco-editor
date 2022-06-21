@@ -16,6 +16,7 @@ const Root = () => {
   const file = useFile()
   const [path, setPath] = useState("")
   const [content, setContent] = useState("")
+  const [language, setLanguage] = useState("")
 
   const onFileContentChange = (content) => {
     setContent(content)
@@ -24,11 +25,28 @@ const Root = () => {
   useEffect(() => {
     if (!file) return
     if (file.file === null) return
-    if (file.file.path === path) return
+    if (file.file?.path === path) return
 
-    setPath(file.file.path)
-    setContent(file.file.content)
+    setPath(file.file?.path)
+    setContent(file.file?.content)
+
+    console.log(file.file)
   }, [file])
+
+  useEffect(() => {
+    if (!path) return
+    if (!path.includes(".")) return
+    const extension = path.split(".").pop().toLowerCase()
+    if (extension === "py") {
+      setLanguage("python")
+    } else if (extension === "js") {
+      setLanguage("javascript")
+    } else if (extension === "c") {
+      setLanguage("c")
+    } else if (extension === "php") {
+      setLanguage("php")
+    }
+  }, [path])
 
   return (
     <div>
@@ -42,10 +60,9 @@ const Root = () => {
               theme="vs-dark"
               height="100vh"
               width="100%"
-              defaultLanguage="python"
               value={content}
               onChange={onFileContentChange}
-              language="python"
+              language={language}
             />
           </Grid.Column>
         </Grid.Row>

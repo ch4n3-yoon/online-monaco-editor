@@ -7,9 +7,6 @@ export const FileProvider = ({ children }) => {
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState(false)
 
-  const [article, setArticle] = useState(null)
-  const [articles, setArticles] = useState(null)
-
   const [file, setFile] = useState(null)
   const [files, setFiles] = useState(null)
 
@@ -36,12 +33,11 @@ export const FileProvider = ({ children }) => {
         .post("/save", { path, content })
         .then(responseHandler)
         .then((data) => {
-          setFile(data.data)
           resolve(data.data)
         })
         .catch((data) => {
           console.error(data)
-          resolve(data.message)
+          reject(data.message)
         })
     })
   }

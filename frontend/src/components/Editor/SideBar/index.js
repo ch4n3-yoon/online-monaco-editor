@@ -56,11 +56,8 @@ export const SideBar = (props) => {
     return <div>Now Loading...</div>
   }
 
-  console.log(file.files)
-
   return (
     <div className={styles.fileList}>
-      {JSON.stringify(file.files)}
       <List {...props}>
         <List.Item>
           <List.Icon name="folder" />
