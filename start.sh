@@ -6,4 +6,4 @@ service nginx start
 # uwsgi --ini /app/uwsgi.ini & 
 python3 /app/app.py
 
-tail -f /dev/null
+# tail -f /dev/null

@@ -14,6 +14,8 @@ RUN apt-get upgrade -y
 RUN apt-get install -y python3 python3-pip 
 RUN apt-get install -y nginx
 RUN apt-get install -y curl net-tools
+RUN apt-get install -y git
+RUN python3 -m pip install APScheduler
 
 WORKDIR /app/
 COPY ./backend/requirements.txt ./
